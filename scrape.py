@@ -15,7 +15,7 @@ import sys
 import urllib.request
 
 COMMENTS_URL = "https://hyp3rdrive.itch.io/fringe-world/comments"
-MAX_PAGES = 10
+MAX_PAGES = 1000  # safety stop only: read every comments page so no score is hidden
 OUT = "posts.json"
 USER_AGENT = "Mozilla/5.0 (compatible; FringeWorldScoresMirror/1.0; +https://github.com/Hyp3rDrive/fringeworld-scores)"
 
