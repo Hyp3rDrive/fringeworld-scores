@@ -2,7 +2,9 @@ name: Mirror itch.io comments
 
 on:
   schedule:
-    - cron: "*/15 * * * *"   # GitHub may run scheduled jobs a few minutes late under load
+    # Off the hour and quarter-hours: GitHub delays (or drops) scheduled runs when load peaks,
+    # which is worst at the top of the hour.
+    - cron: "7,22,37,52 * * * *"
   workflow_dispatch:          # "Run workflow" button for an immediate refresh
 
 permissions:
@@ -15,7 +17,7 @@ concurrency:
 jobs:
   scrape:
     runs-on: ubuntu-latest
-    timeout-minutes: 5
+    timeout-minutes: 10  # room for retries
     steps:
       - uses: actions/checkout@v4
       - name: Fetch comments

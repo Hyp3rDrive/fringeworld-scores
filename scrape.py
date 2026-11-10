@@ -12,11 +12,18 @@ import html
 import json
 import re
 import sys
+import time
+import urllib.error
 import urllib.request
 
 COMMENTS_URL = "https://hyp3rdrive.itch.io/fringe-world/comments"
 MAX_PAGES = 1000  # safety stop only: read every comments page so no score is hidden
 OUT = "posts.json"
+# itch.io sometimes answers GitHub's shared runners with 429 Too Many Requests: retry politely,
+# and if it still won't answer, keep the last good posts.json and try again next run.
+RETRIES = 3
+RETRY_WAIT = [10, 30, 60]   # seconds before each retry (or the server's Retry-After, up to 120)
+PAGE_GAP = 1.0              # seconds between comment pages, to stay well clear of rate limits
 USER_AGENT = "Mozilla/5.0 (compatible; FringeWorldScoresMirror/1.0; +https://github.com/Hyp3rDrive/fringeworld-scores)"
 
 POST_RE = re.compile(
@@ -45,10 +52,29 @@ def next_page_url(page: str) -> str:
     return url if url.startswith("http") else "https://hyp3rdrive.itch.io" + url
 
 
+class Unavailable(Exception):
+    """itch.io wouldn't serve a page after all retries."""
+
+
 def fetch(url: str) -> str:
     req = urllib.request.Request(url, headers={"User-Agent": USER_AGENT})
-    with urllib.request.urlopen(req, timeout=30) as r:
-        return r.read().decode("utf-8")
+    for attempt in range(RETRIES + 1):
+        try:
+            with urllib.request.urlopen(req, timeout=30) as r:
+                return r.read().decode("utf-8")
+        except urllib.error.HTTPError as e:
+            if e.code != 429 and e.code < 500:
+                raise  # a real error (404 etc.): fail loudly
+            why, retry_after = f"HTTP {e.code}", e.headers.get("Retry-After", "")
+        except (urllib.error.URLError, TimeoutError) as e:
+            why, retry_after = str(e), ""
+        if attempt == RETRIES:
+            raise Unavailable(f"{url}: {why}")
+        wait = RETRY_WAIT[attempt]
+        if retry_after.isdigit():
+            wait = min(max(wait, int(retry_after)), 120)
+        print(f"{why} on {url}; retrying in {wait}s")
+        time.sleep(wait)
 
 
 def main() -> int:
@@ -56,6 +82,8 @@ def main() -> int:
     for _ in range(MAX_PAGES):
         if not url or url in seen:
             break
+        if seen:
+            time.sleep(PAGE_GAP)
         seen.add(url)
         page = fetch(url)
         for p in parse_posts(page):
@@ -80,4 +108,9 @@ if __name__ == "__main__":
     if len(sys.argv) > 1:  # parse a saved page instead of fetching: python3 scrape.py page.html
         print(json.dumps(parse_posts(open(sys.argv[1]).read()), indent=1))
         sys.exit(0)
-    sys.exit(main())
+    try:
+        sys.exit(main())
+    except Unavailable as e:
+        # Only complete reads are written, so the mirror keeps its last good copy.
+        print(f"::warning::itch.io unavailable, kept the previous posts.json ({e})")
+        sys.exit(0)
