@@ -27,7 +27,9 @@ PAGE_GAP = 1.0              # seconds between comment pages, to stay well clear 
 USER_AGENT = "Mozilla/5.0 (compatible; FringeWorldScoresMirror/1.0; +https://github.com/Hyp3rDrive/fringeworld-scores)"
 
 POST_RE = re.compile(
-    r'class="community_post[^"]*" id="post-(\d+)".*?<span class="post_author"><a[^>]*>(.*?)</a></span>'
+    # The post's tag has class="community_post ..." and id="post-N" in either order (itch put id
+    # first in Nov 2026, which emptied the mirror), so the class is checked with a lookahead.
+    r'<div(?=[^>]*\bclass="community_post\b)[^>]*\bid="post-(\d+)"[^>]*>.*?<span class="post_author"><a[^>]*>(.*?)</a></span>'
     r'.*?<div[^>]*class="post_body[^"]*"[^>]*>(.*?)</div>', re.S)
 NEXT_RE = re.compile(r'href="([^"]*/comments\?(?:before|page)=[^"]*)"[^>]*>[^<]*(?:Next|Older|More)')
 
@@ -86,7 +88,13 @@ def main() -> int:
             time.sleep(PAGE_GAP)
         seen.add(url)
         page = fetch(url)
-        for p in parse_posts(page):
+        found = parse_posts(page)
+        if not found and "community_post" in page:
+            # Posts are on the page but none parsed: itch changed its markup. Keep the last copy
+            # (an empty mirror empties every web leaderboard) and fail the run so it shows up red.
+            print(f"Posts on {url} but none parsed: itch's markup changed? Keeping posts.json.")
+            return 1
+        for p in found:
             posts[p["id"]] = p
         url = next_page_url(page)
     ordered = sorted(posts.values(), key=lambda p: p["id"])
