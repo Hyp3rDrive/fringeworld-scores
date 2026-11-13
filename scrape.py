@@ -27,9 +27,9 @@ PAGE_GAP = 1.0              # seconds between comment pages, to stay well clear 
 USER_AGENT = "Mozilla/5.0 (compatible; FringeWorldScoresMirror/1.0; +https://github.com/Hyp3rDrive/fringeworld-scores)"
 
 POST_RE = re.compile(
-    # The post's tag has class="community_post ..." and id="post-N" in either order (itch put id
-    # first in Nov 2026, which emptied the mirror), so the class is checked with a lookahead.
-    r'<div(?=[^>]*\bclass="community_post\b)[^>]*\bid="post-(\d+)"[^>]*>.*?<span class="post_author"><a[^>]*>(.*?)</a></span>'
+    # A post's tag has community_post among its classes (not always first) and id="post-N",
+    # in either order: itch's pages differ, and in Nov 2026 one change emptied the mirror.
+    r'<div(?=[^>]*\bclass="[^"]*(?<![\w-])community_post(?![\w-]))[^>]*\bid="post-(\d+)"[^>]*>.*?<span class="post_author"><a[^>]*>(.*?)</a></span>'
     r'.*?<div[^>]*class="post_body[^"]*"[^>]*>(.*?)</div>', re.S)
 NEXT_RE = re.compile(r'href="([^"]*/comments\?(?:before|page)=[^"]*)"[^>]*>[^<]*(?:Next|Older|More)')
 
