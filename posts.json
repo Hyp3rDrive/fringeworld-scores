@@ -1,4 +1,20 @@
 {
  "source": "https://hyp3rdrive.itch.io/fringe-world/comments",
- "posts": []
+ "posts": [
+  {
+   "id": 17853311,
+   "user": "hyp3rdrive",
+   "text": "FREAK PARK - ENDLESS\nScore: 2334\nSurvived: 3:28\nGuests served: 19 | Correct: 17 | Accuracy: 85%\nCitations: 3 | Walk-outs: 1\nAvg time per guest: 7.6s\nManagement calls answered: 3/3\nSeed: SHROOMJAM26-1 | Version: 0.7.0 | 2026-11-09\nRun: b8bce159d42bad98\nTags: ENDLESS\nSIG a3fcdd06 MEUCIDmE4uMRu+p/uyNzbCPdOVanCWjAekGY8kLYQbbktjapAiEAx4v/cUgBZfDUFFqsqqhVMKVGUWy7UG/MQZrHsWOOFrc=\n"
+  },
+  {
+   "id": 17855171,
+   "user": "hyp3rdrive",
+   "text": "dev bad score test\n\nFREAK PARK - ENDLESS\nScore: 100\nSurvived: 0:20\nGuests served: 5 | Correct: 2 | Accuracy: 40%\nCitations: 3 | Walk-outs: 0\nAvg time per guest: 0.5s\nSeed: XGPKTK-2 | Version: 0.8.0 | 2026-11-09\nRun: 24e6d600b0e6eef8\nTags: ENDLESS\nSIG a3fcdd06 MEUCIGFAMCNmFGJK59Q7yj6foAR/VXoR+NM1cDmB3LTeiZL4AiEA2YO3hKKUMNwcyRf9ZxpLqnmevs3raCizYKzhCtGIzuA=\n"
+  },
+  {
+   "id": 17888138,
+   "user": "hyp3rdrive",
+   "text": "FREAK PARK - ENDLESS\nScore: 2326\nSurvived: 4:25\nGuests served: 19 | Correct: 19 | Accuracy: 95%\nCitations: 3 | Walk-outs: 1\nAvg time per guest: 11.5s\nManagement calls answered: 2/4\nSeed: W86UET-3 | Version: 0.15.0 | 2026-11-13\nRun: f40c2271a27bd533\nTags: ENDLESS\nSIG a3fcdd06 MEQCIBqQzsaHaXaH/DQew7pLsgEqYYddH8jBgg/UTomTo2tfAiBGRqSBkiaaIT6CioWNisWq0ig8yPNCk1Y519IBpNmyPQ==\n"
+  }
+ ]
 }
